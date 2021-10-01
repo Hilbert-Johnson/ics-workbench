@@ -18,7 +18,7 @@ uint64_t add_mult(uint64_t a, uint64_t b, uint64_t m){
     return multimod2(a+b,m);
   }
 }
-
+      
 uint64_t multimod(uint64_t a, uint64_t b, uint64_t m) {
   a=multimod2(a,m);
   b=multimod2(b,m);
