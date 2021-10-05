@@ -25,10 +25,10 @@ uint64_t multimod(uint64_t a, uint64_t b, uint64_t m) {
   uint64_t result=0;
   for(int i = 0; i < 64;i++){
     uint64_t tmp1 = a & 1;
-    b=add_mult(b,b,m);
     if(tmp1==1){
       result=add_mult(result,b,m);
     }
+    b=add_mult(b,b,m);
     a >>= 1;  
   }
   return result;
