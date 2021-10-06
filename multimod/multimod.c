@@ -1,6 +1,12 @@
 #include <stdint.h>
 
 static inline uint64_t mul2(uint64_t a, uint64_t m){
+  if(m>=10){
+    while(a>=m){
+      a-=m; 
+    }
+    return a;
+  }
   uint64_t tmp1=(m<<1);
   uint64_t tmp2=m;
 
