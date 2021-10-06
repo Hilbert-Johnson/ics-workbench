@@ -1,8 +1,18 @@
 #include <stdint.h>
 
 static inline uint64_t mul2(uint64_t a, uint64_t m){
+  uint64_t tmp1=(m<<1);
+  uint64_t tmp2=m;
+
   while(a>=m){
-    a-=m;
+    while(a>=tmp1){
+      if(tmp1<tmp2){
+        break;
+      }
+      tmp2=tmp1;
+      tmp1<<=1;
+    }
+    a-=tmp2;
   }
   return a;
 }
