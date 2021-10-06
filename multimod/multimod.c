@@ -2,8 +2,6 @@
 
 static inline uint64_t mul2(uint64_t a, uint64_t m){
   if(m> 1 && (m & (m-1)) == 0){
-    return 521;
-  }else{
     return 0;
   }
     while(a>=m){
