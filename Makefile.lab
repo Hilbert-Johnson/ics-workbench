@@ -1,6 +1,9 @@
 # **DO NOT MODIFY**
 
 export COURSE := ICS2021
+export STUID := 201300024
+export STUNAME := 赵思衡
+export TOKEN := nnCVryxM
 URL := 'http://jyywiki.cn/static/submit-icslab.sh'
 
 submit:
