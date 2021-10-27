@@ -14,8 +14,8 @@ int asm_popcnt(uint64_t x) {
   int i = 0;
   asm(
         "cmpl $63 , %%ecx \n\t"
-        "jg end \n"
-        "loop: \n\t"
+        "jg end1 \n"
+        "loop1: \n\t"
         "movq %%rbx , %%rdx \n\t"
         "shrq %%cl , %%rdx \n\t"
         "andq $1 , %%rdx \n\t"
@@ -25,8 +25,8 @@ int asm_popcnt(uint64_t x) {
         "update: \n\t"
         "addl $1 , %%ecx \n\t"
         "cmpl $63 , %%ecx \n\t"
-        "jle loop \n"
-        "end: \n\t"
+        "jle loop1 \n"
+        "end1: \n\t"
         : "=a" (s)
         : "a"(s),"b"(x),"c"(i)
         : "rdx"
@@ -38,14 +38,14 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
   size_t i = 0;
     asm(
         "cmpq %%rdi , %%rcx \n\t"
-        "jbe end\n"
-        "loop :\n\t"
+        "jbe end2\n"
+        "loop2 :\n\t"
         "movb (%%rbx,%%rdi,1), %%dl \n\t"
         "movb %%dl , (%%rax,%%rdi,1) \n\t"
         "addq $1 , %%rdi\n\t"
         "cmpq %%rdi, %%rcx \n\t"
-        "ja loop\n"
-        "end :\n\t" 
+        "ja loop2\n"
+        "end2 :\n\t" 
         : "=a" (dest)
         : "a"(dest),"b"(src),"c"(n),"D"(i)
         : "memory"
