@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 int main() {
-  printf("%d\n",asm_add(0x7fffffffffffffff,1));
+  printf("%ld\n",asm_add(0x7fffffffffffffff,1));
   asm_jmp_buf buf;
   int r = asm_setjmp(buf);
   if (r == 0) {
