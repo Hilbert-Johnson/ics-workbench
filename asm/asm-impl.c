@@ -6,6 +6,7 @@ int64_t asm_add(int64_t a, int64_t b) {
         "movq	-16(%rbp), %rax\n"
         "addq	%rdx, %rax\n"
   );
+  return;
 }
 
 int asm_popcnt(uint64_t x) {
