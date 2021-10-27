@@ -4,7 +4,7 @@
 
 int main() {
   printf("%ld\n",asm_add(1,1));
-  printf("%d\n",asm_popcnt(0xff)); 
+  printf("%d\n",asm_popcnt(0xffffffffffffffff)); 
   asm_jmp_buf buf;
   int r = asm_setjmp(buf);
   if (r == 0) {
