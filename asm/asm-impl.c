@@ -2,7 +2,10 @@
 #include <string.h>
 
 int64_t asm_add(int64_t a, int64_t b) {
-  return a + b;
+  asm("movq	-8(%rbp), %rdx\n"
+        "movq	-16(%rbp), %rax\n"
+        "addq	%rdx, %rax\n"
+  );
 }
 
 int asm_popcnt(uint64_t x) {
