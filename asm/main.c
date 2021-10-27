@@ -10,6 +10,7 @@ int main() {
     assert(asm_popcnt(0x0123456789abcdefULL) == 32);
     // TODO: add more tests here.
     asm_longjmp(buf, 123);
+    printf("?/\n");
   } else {
     assert(r == 123);
     printf("PASSED.\n");
