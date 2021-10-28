@@ -68,7 +68,7 @@ int asm_setjmp(asm_jmp_buf env) {
 	    "movq (%%rsp),%%rdx \n\t"         // save return addr ptr for new rip 
 	    "movq %%rdx,56(%%rdi) \n\t"
 	    "xorl %%eax,%%eax \n\t"
-      "end :"        
+      "end : \n\t"         
       : "=a"(ret), "=D"(env)
       : "a"(ret), "D"(env)
       
