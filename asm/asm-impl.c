@@ -75,9 +75,10 @@ int asm_setjmp(asm_jmp_buf env) {
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-      "xorl %%eax,%%eax \n\t"
-	    "cmpl $1,%%esi \n\t"             /* CF = val ? 0 : 1 */
-	    "adc  %%esi,%%eax \n\t"            /* eax = val + !val */
+      "test    %eax,%eax\n\t" // val == 0?
+      "jnz temp \n\t"
+      "inc     %eax \n\t"      //  eax++
+      "temp: \n\t"
 	    "movq (%%rdi),%%rbx \n\t"          /* rdi is the jmp_buf, restore regs from it */
 	    "movq 8(%%rdi),%%rbp \n\t"
 	    "movq 16(%%rdi),%%r12 \n\t"
