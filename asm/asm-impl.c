@@ -74,8 +74,6 @@ int asm_setjmp(asm_jmp_buf env) {
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-      "movq  8(%%rsp),%%rdx" // edx = jmp_buf
-      "movq  16(%%rsp),%%rax "// eax = val
       "testq    %%rax,%%rax" // val == 0?
       "jnz tmp"
       "addq $1,%%rax"      //  eax++
@@ -88,7 +86,9 @@ void asm_longjmp(asm_jmp_buf env, int val) {
       "movq 40(%%edx),%%r14"
       "movq 48(%%edx),%%r15"
       "movq 56(%%edx), %%rcx" 
-      "jmp *%%rcx "        
+      "jmp *%%rcx " 
+      : "=d"(env) , "=a"(val)
+      : "d"(env) , "a"(val)     
     );
 }
 
