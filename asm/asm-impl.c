@@ -75,7 +75,7 @@ int asm_setjmp(asm_jmp_buf env) {
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-      "testl    %%eax,%5%eax\n\t" // val == 0?
+      "testl   %%eax,%%eax\n\t" // val == 0?
       "jnz temp \n\t"
       "addl $1, %%eax \n\t"      //  eax++
       "temp: \n\t"
