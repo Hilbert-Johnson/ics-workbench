@@ -66,7 +66,6 @@ int asm_setjmp(asm_jmp_buf env) {
       "end: "
       : "=D" (env) 
       : "D" (env)
-      : 
     );
   return ret;
 }
@@ -83,7 +82,6 @@ void asm_longjmp(asm_jmp_buf env, int val) {
       "jmp  end\n\t"
       : "=a"(val)
       : "D" (env) , "a"(val) 
-      : 
     );
 }
 
