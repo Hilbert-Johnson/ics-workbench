@@ -57,13 +57,13 @@ int asm_setjmp(asm_jmp_buf env) {
   int ret = 0;
   int i = 0;
     asm(
-      "movq %%rsp , (%%rdi,%%rcx,1) \n\t"
-      "movq %%rbx , 8(%%rdi) \n\t"
-      "movq %%rbp , 16(%%rdi) \n\t"
-      "movq %%r12 , 24(%%rdi) \n\t"
-      "movq %%r13 , 32(%%rdi) \n\t"
-      "movq %%r14 , 40(%%rdi) \n\t"
-      "movq %%r15 , 48(%%rdi) \n\t"
+      "movq  %%rsp , (%%rdi) \n\t"
+      "movq  %%rbx , 8(%%rdi) \n\t"
+      "movq  %%rbp , 16(%%rdi) \n\t"
+      "movq  %%r12 , 24(%%rdi) \n\t"
+      "movq  %%r13 , 32(%%rdi) \n\t"
+      "movq  %%r14 , 40(%%rdi) \n\t"
+      "movq  %%r15 , 48(%%rdi) \n\t"
       "end: "
       : "=D" (env) 
       : "D" (env), "c"(i)
