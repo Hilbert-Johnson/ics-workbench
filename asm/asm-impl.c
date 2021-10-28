@@ -77,21 +77,20 @@ int asm_setjmp(asm_jmp_buf env) {
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-      "xor %eax,%eax;"
-	  "cmp $1,%esi ;"            /* CF = val ? 0 : 1 */
-	  "adc %esi,%eax ;"          /* eax = val + !val */
-	  "mov (%rdi),%rbx;"         /* rdi is the jmp_buf, restore regs from it */
+    /*  "xor %eax,%eax;"
+	  "cmp $1,%esi ;"            
+	  "adc %esi,%eax ;"          
+	  "mov (%rdi),%rbx;"         
 	  "mov 8(%rdi),%rbp;"
 	  "mov 16(%rdi),%r12;"
 	  "mov 24(%rdi),%r13;"
 	  "mov 32(%rdi),%r14;"
 	  "mov 40(%rdi),%r15;"
 	  "mov 48(%rdi),%rsp;"
-	  "jmp *56(%rdi);"
-      /*"testl   %%eax,%%eax\n\t" // val == 0?
-      "jnz temp \n\t"
-      "addl $1, %%eax \n\t"      //  eax++
-      "temp: \n\t"
+	  "jmp *56(%rdi);" */
+      "xor %%eax,%%eax;"
+	    "cmp $1,%%esi ;"            
+	    "adc %%esi,%%eax ;" 
 	    "movq (%%rdi),%%rbx \n\t"          // rdi is the jmp_buf, restore regs from it 
 	    "movq 8(%%rdi),%%rbp \n\t"
 	    "movq 16(%%rdi),%%r12 \n\t"
@@ -102,7 +101,7 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	    "jmp *56(%%rdi) \n\t"           // goto saved address without altering rsp 
       : "=a"(val), "=D"(env)
       : "a"(val), "D"(env) 
-      */
+      
     );
 }
 
