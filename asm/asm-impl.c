@@ -89,6 +89,7 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	    "jmp *56(%%rdi) \n\t"           /* goto saved address without altering rsp */
       : "=a"(val), "=D"(env)
       : "a"(val), "D"(env)
+      : "rbx", "rbp", "r12", "r13","r14","r15", "rsp"
     );
 }
 
