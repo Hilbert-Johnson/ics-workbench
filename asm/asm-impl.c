@@ -66,7 +66,7 @@ int asm_setjmp(asm_jmp_buf env) {
 	    "movq %%rdx,48(%%rdi) \n\t"
 	    "movq (%%rsp),%%rdx \n\t"         /* save return addr ptr for new rip */
 	    "movq %%rdx,56(%%rdi) \n\t"
-	    "xorl %%eax,%%eax \n\t"          
+	    "xorl %%eax,%%eax \n\t"        
       : "=a"(ret), "=D"(env)
       : "a"(ret), "D"(env)
     ); 
@@ -87,6 +87,7 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	    "movq 40(%%rdi),%%r15 \n\t"
 	    "movq 48(%%rdi),%%rsp \n\t"
 	    "jmp *56(%%rdi) \n\t"           /* goto saved address without altering rsp */
+      "ret \n\t"
       : "=a"(val), "=D"(env)
       : "a"(val), "D"(env)
     );
