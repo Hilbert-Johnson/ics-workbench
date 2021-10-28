@@ -77,7 +77,7 @@ void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
       "xorl %%eax,%%eax \n\t"
 	    "cmpl $1,%%esi \n\t"             /* CF = val ? 0 : 1 */
-	    "adcl %%esi,%%eax \n\t"            /* eax = val + !val */
+	    "adc  %%esi,%%eax \n\t"            /* eax = val + !val */
 	    "movq (%%rdi),%%rbx \n\t"          /* rdi is the jmp_buf, restore regs from it */
 	    "movq 8(%%rdi),%%rbp \n\t"
 	    "movq 16(%%rdi),%%r12 \n\t"
