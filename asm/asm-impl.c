@@ -55,7 +55,6 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 
 int asm_setjmp(asm_jmp_buf env) {
   int ret = 0;
-  int i = 0;
     asm(
       "movq  %%rsp , (%%rdi) \n\t"
       "movq  %%rbx , 8(%%rdi) \n\t"
@@ -66,8 +65,7 @@ int asm_setjmp(asm_jmp_buf env) {
       "movq  %%r15 , 48(%%rdi) \n\t"
       "end: "
       : "=D" (env) 
-      : "D" (env), "c"(i)
-      : "memory"
+      : "D" (env)
     );
   return ret;
 }
