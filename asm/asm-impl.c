@@ -54,7 +54,7 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 }
 
 int asm_setjmp(asm_jmp_buf env) {
-  int ret = 1;
+  int ret = 0;
   asm(
       "movq %%rsp , (%%rdi) \n\t"
       "movq %%rbx , 8(%%rdi) \n\t"
@@ -89,4 +89,4 @@ void asm_longjmp(asm_jmp_buf env, int val) {
   );
 }
 
-//int main(){}
+int main(){}
