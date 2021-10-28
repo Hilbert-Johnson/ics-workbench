@@ -56,40 +56,38 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 int asm_setjmp(asm_jmp_buf env) {
   int ret = 0;
     asm volatile(
-      "movq  %%rsp , (%%rdi) \n\t"
-      "movq  %%rbx , 8(%%rdi) \n\t"
-      "movq  %%rbp , 16(%%rdi) \n\t"
-      "movq  %%r12 , 24(%%rdi) \n\t"
-      "movq  %%r13 , 32(%%rdi) \n\t"
-      "movq  %%r14 , 40(%%rdi) \n\t"
-      "movq  %%r15 , 48(%%rdi) \n\t"
-      "xorq  %%rax , %%rax \n\t"
-      "leaq  4(%%rip), %%rcx \n\t"
-      "movq  %%rcx , 56(%%rdi) \n\t"
-      : "=D" (env) , "=a"(ret)
-      : "D" (env)
+      "movq %%rbx,(%%rdi) \n\t"        /* rdi is jmp_buf, move registers onto it */
+	    "movq %%rbp,8(%%rdi) \n\t"
+	    "movq %%r12,16(%%rdi) \n\t"
+	    "movq %%r13,24(%%rdi) \n\t"
+	    "movq %%r14,32(%%rdi) \n\t"
+	    "movq %%r15,40(%%rdi) \n\t"
+	    "leaq 8(%%rsp),%%rdx \n\t"        /* this is our rsp WITHOUT current ret addr */
+	    "movq %%rdx,48(%%rdi) \n\t"
+	    "movq (%%rsp),%%rdx \n\t"         /* save return addr ptr for new rip */
+	    "movq %%rdx,56(%%rdi) \n\t"
+	    "xorl %%eax,%%eax \n\t"          
+      : "=a"(ret), "=D"(env)
+      : "a"(ret), "D"(env)
     ); 
   return ret;
 }
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-      "testq    %%rax,%%rax;\n\t" // val == 0?
-      "jnz tmp;\n\t"
-      "addq $1,%%rax;\n\t"      //  eax++
-      "tmp: ;\n\t"
-      "movq  8(%%edx),%%rbx ;\n\t" 
-      "movq 24(%%edx),%%r12;\n\t" 
-      "movq 32(%%edx),%%r13;\n\t" 
-      "movq 40(%%edx),%%r14;\n\t"
-      "movq 48(%%edx),%%r15;\n\t"
-      "movq  16(%%edx),%%rbp;\n\t"
-      "movq (%%rdx),%%rcx;\n\t" 
-      "movq %%rcx,%%rsp;\n\t"
-      "movq 56(%%edx), %%rcx;\n\t" 
-      "jmp  *%%rcx;\n\t " 
-      : "=d"(env) , "=a"(val)
-      : "d"(env) , "a"(val)     
+      "xorl %%eax,%%eax \n\t"
+	    "cmpl $1,%%esi \n\t"             /* CF = val ? 0 : 1 */
+	    "adcl %%esi,%%eax \n\t"            /* eax = val + !val */
+	    "movq (%%rdi),%%rbx \n\t"          /* rdi is the jmp_buf, restore regs from it */
+	    "movq 8(%%rdi),%%rbp \n\t"
+	    "movq 16(%%rdi),%%r12 \n\t"
+	    "movq 24(%%rdi),%%r13 \n\t"
+	    "movq 32(%%rdi),%%r14 \n\t"
+	    "movq 40(%%rdi),%%r15 \n\t"
+	    "movq 48(%%rdi),%%rsp \n\t"
+	    "jmpq *56(%%rdi) \n\t"           /* goto saved address without altering rsp */
+      : "=a"(val), "=D"(env)
+      : "a"(val), "D"(env)
     );
 }
 
