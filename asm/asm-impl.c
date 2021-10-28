@@ -74,6 +74,7 @@ int asm_setjmp(asm_jmp_buf env) {
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
+      "movq 16(%%rsp), %%rax"
       "testq %%rax, %%rax \n\t"
       "jnz tmp"
       "addq $1, %%rax \n"
