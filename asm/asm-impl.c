@@ -75,9 +75,9 @@ int asm_setjmp(asm_jmp_buf env) {
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-      "test    %eax,%eax\n\t" // val == 0?
+      "testl    %%eax,%5%eax\n\t" // val == 0?
       "jnz temp \n\t"
-      "inc     %eax \n\t"      //  eax++
+      "addl $1, %%eax \n\t"      //  eax++
       "temp: \n\t"
 	    "movq (%%rdi),%%rbx \n\t"          /* rdi is the jmp_buf, restore regs from it */
 	    "movq 8(%%rdi),%%rbp \n\t"
@@ -87,7 +87,6 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	    "movq 40(%%rdi),%%r15 \n\t"
 	    "movq 48(%%rdi),%%rsp \n\t"
 	    "jmp *56(%%rdi) \n\t"           /* goto saved address without altering rsp */
-      "ret \n\t"
       : "=a"(val), "=D"(env)
       : "a"(val), "D"(env)
     );
