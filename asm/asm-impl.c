@@ -99,11 +99,11 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	    "movq 32(%%rdi),%%r14 \n\t"
 	    "movq 40(%%rdi),%%r15 \n\t"
 	    "movq 48(%%rdi),%%rsp \n\t"
-      "jmp end \n\t"  // goto saved address without altering rsp 
+      "movq 56(%%rdi), %%rip \n\t"  // goto saved address without altering rsp 
       : "=a"(val), "=D"(env)
       : "a"(val), "D"(env) 
       
     );
 }
 
-//int main(){}
+int main(){}
