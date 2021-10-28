@@ -54,6 +54,7 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 }
 
 int asm_setjmp(asm_jmp_buf env) {
+  int ret = 1;
   asm(
       "movq %%rsp , (%%rdi) \n\t"
       "movq %%rbx , 8(%%rdi) \n\t"
@@ -62,14 +63,30 @@ int asm_setjmp(asm_jmp_buf env) {
       "movq %%r13 , 32(%%rdi) \n\t"
       "movq %%r14 , 40(%%rdi) \n\t"
       "movq %%r15 , 48(%%rdi) \n\t"
-      "leaq 8(%%rip) , 56(%%rdi) \n\t"
-      : "=D" (env)
+      "leaq 4(%%rip), %%rcx \n\t"
+      "movq  %%rcx , 56(%%rdi) \n\t"
+      : "=D" (env) 
       : "D" (env)
-      : "memory"
+      : "memory", "rcx"
   );
-  return 0;
+  return ret;
 }
 
 void asm_longjmp(asm_jmp_buf env, int val) {
-  longjmp(env, val);
+  asm(
+      "movq (%%rdi) , %%rsp\n\t"
+      "movq 8(%%rdi), %%rbx \n\t"
+      "movq 16(%%rdi), %%rbp \n\t"
+      "movq 24(%%rdi), %%r12 \n\t"
+      "movq 32(%%rdi), %%r13 \n\t"
+      "movq 40(%%rdi), %%r14 \n\t"
+      "movq 48(%%rdi), %%r15 \n\t"
+      "movq %%rax , %%rax \n\t"
+      "movq 56(%%rdi), %%rip \n\t"
+      : "=a"(val)
+      : "D" (env) , "a"(val)
+      : 
+  );
 }
+
+int main(){}
