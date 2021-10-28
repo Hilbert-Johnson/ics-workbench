@@ -1,9 +1,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-// TODO: replace with your definition
-#include <setjmp.h> // remove this
 #define asm_jmp_buf jmp_buf
+typedef struct _jmp_buf {
+    int64_t callee_saved[8];
+} jmp_buf[1];
 
 int64_t asm_add(int64_t a, int64_t b);
 int     asm_popcnt(uint64_t x);

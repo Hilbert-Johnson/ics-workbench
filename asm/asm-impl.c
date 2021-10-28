@@ -54,7 +54,20 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 }
 
 int asm_setjmp(asm_jmp_buf env) {
-  return setjmp(env);
+  asm(
+      "movq %%rsp , (%%rdi) \n\t"
+      "movq %%rbx , 8(%%rdi) \n\t"
+      "movq %%rbp , 16(%%rdi) \n\t"
+      "movq %%r12 , 24(%%rdi) \n\t"
+      "movq %%r13 , 32(%%rdi) \n\t"
+      "movq %%r14 , 40(%%rdi) \n\t"
+      "movq %%r15 , 48(%%rdi) \n\t"
+      "leaq 8(%%rip) , 56(%%rdi) \n\t"
+      : "=D" (env)
+      : "D" (env)
+      : "memory"
+  );
+  return 0;
 }
 
 void asm_longjmp(asm_jmp_buf env, int val) {
