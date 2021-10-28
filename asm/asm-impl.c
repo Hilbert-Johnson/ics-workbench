@@ -87,6 +87,7 @@ void asm_longjmp(asm_jmp_buf env, int val) {
       : "=a"(val)
       : "D" (env) , "a"(val) 
     );
+    return 0;
 }
 
 //int main(){}
