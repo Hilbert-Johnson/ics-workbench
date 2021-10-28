@@ -5,8 +5,8 @@
 asm_jmp_buf buf;
 
 int main() {
-  //printf("%ld\n",asm_add(1,1));
-  //printf("%d\n",asm_popcnt(0xffffffffffffffff)); 
+  printf("%ld\n",asm_add(1,1));
+  printf("%d\n",asm_popcnt(0xffffffffffffffff)); 
   int r = setjmp(buf);
   printf("r:%d\n",r);
   if (r == 0) {
