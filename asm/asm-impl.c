@@ -74,22 +74,21 @@ int asm_setjmp(asm_jmp_buf env) {
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-      /*"testq %%rax, %%rax \n\t"
+      "movq  8(%%rsp),%%rdx" // edx = jmp_buf
+      "movq  16(%%rsp),%%rax "// eax = val
+      "testq    %%rax,%%rax" // val == 0?
       "jnz tmp"
-      "addq $1, %%rax \n"
-      "tmp: \n\t"
-      "movq 8(%%rdi), %%rbx \n\t"
-      "movq 16(%%rdi), %%rbp \n\t"
-      "movq 24(%%rdi), %%r12 \n\t"
-      "movq 32(%%rdi), %%r13 \n\t"
-      "movq 40(%%rdi), %%r14 \n\t"
-      "movq 48(%%rdi), %%r15 \n\t"*/
-      "movq 56(%%rdi), %%rcx \n\t"
-      "movq (%%rdi) , %%rsp\n\t"
-      "jmp  *%%rcx\n\t"
-      "ret"
-      : "=a"(val)  
-      : "D" (env) , "a"(val) 
+      "addq $1,%%rax"      //  eax++
+      "tmp:"
+      "movq   (%%rdx),%%rsp" 
+      "movq  8(%%edx),%%rbx" 
+      "movq  16(%%edx),%%rbp" 
+      "movq 24(%%edx),%%r12" 
+      "movq 32(%%edx),%%r13" 
+      "movq 40(%%edx),%%r14"
+      "movq 48(%%edx),%%r15"
+      "movq 56(%%edx), %%rcx" 
+      "jmp *%%rcx "        
     );
 }
 
