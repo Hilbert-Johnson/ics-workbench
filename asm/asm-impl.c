@@ -56,16 +56,17 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 int asm_setjmp(asm_jmp_buf env) {
   int ret = 123;
     asm(
-      "movq %%rsp , (%%rcx) \n\t"
-      "movq %%rbx , 8(%%rcx) \n\t"
-      "movq %%rbp , 16(%%rcx) \n\t"
-      "movq %%r12 , 24(%%rcx) \n\t"
-      "movq %%r13 , 32(%%rcx) \n\t"
-      "movq %%r14 , 40(%%rcx) \n\t"
-      "movq %%r15 , 48(%%rcx) \n\t"
+      "movq %%rsp , (%%rdi) \n\t"
+      "movq %%rbx , 8(%%rdi) \n\t"
+      "movq %%rbp , 16(%%rdi) \n\t"
+      "movq %%r12 , 24(%%rdi) \n\t"
+      "movq %%r13 , 32(%%rdi) \n\t"
+      "movq %%r14 , 40(%%rdi) \n\t"
+      "movq %%r15 , 48(%%rdi) \n\t"
       "end: "
-      : "=c" (env) 
-      : "c" (env)
+      : "=D" (env) 
+      : "D" (env)
+      : "memory"
     );
   return ret;
 }
