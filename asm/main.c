@@ -7,7 +7,7 @@ asm_jmp_buf buf;
 int main() {
   //printf("%ld\n",asm_add(1,1));
   //printf("%d\n",asm_popcnt(0xffffffffffffffff)); 
-  int r = asm_setjmp(buf);
+  int r = setjmp(buf);
   printf("r:%d\n",r);
   if (r == 0) {
     //assert(asm_add(1234, 5678) == 6912);
@@ -16,7 +16,7 @@ int main() {
     longjmp(buf, 123);
     printf("do not reach here\n");
   } else {
-    //assert(r == 123);
+    assert(r == 123);
     printf("PASSED.\n");
   }
 }
