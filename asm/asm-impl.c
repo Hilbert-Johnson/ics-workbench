@@ -67,7 +67,7 @@ int asm_setjmp(asm_jmp_buf env) {
       "movq  %%rcx , 56(%%rdi) \n\t"
       : "=D" (env) 
       : "D" (env)
-      : "memory", "rcx"
+      : 
   );
   return ret;
 }
