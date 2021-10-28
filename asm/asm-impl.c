@@ -69,25 +69,24 @@ int asm_setjmp(asm_jmp_buf env) {
 	    "movq %%rdx,56(%%rdi) \n\t"
 	    "xorl %%eax,%%eax \n\t"        
       : "=a"(ret), "=D"(env)
-      : "a"(ret), "D"(env)
-      
+      : "a"(ret), "D"(env)   
     ); 
   return ret;
 }
 
 void asm_longjmp(asm_jmp_buf env, int val) {
     asm(
-    "xor %eax,%eax;"
-	  "cmp $1,%esi ;"            
-	  "adc %esi,%eax ;"          
-	  "mov (%rdi),%rbx;"         
-	  "mov 8(%rdi),%rbp;"
-	  "mov 16(%rdi),%r12;"
-	  "mov 24(%rdi),%r13;"
-	  "mov 32(%rdi),%r14;"
-	  "mov 40(%rdi),%r15;"
-	  "mov 48(%rdi),%rsp;"
-	  "jmp *56(%rdi);" 
+    "xor %eax,%eax \n\t"
+	  "cmp $1,%esi \n\t"            
+	  "adc %esi,%eax \n\t"          
+	  "mov (%rdi),%rbx \n\t"          
+	  "mov 8(%rdi),%rbp \n\t"
+	  "mov 16(%rdi),%r12 \n\t"
+	  "mov 24(%rdi),%r13 \n\t"
+	  "mov 32(%rdi),%r14 \n\t"
+	  "mov 40(%rdi),%r15 \n\t"
+	  "mov 48(%rdi),%rsp \n\t"
+	  "jmp *56(%rdi) \n\t" 
   /*  "xor %%eax,%%eax \n\t" 
 	    "cmp $1,%%esi \n\t"            
 	    "adc %%esi,%%eax \n\t" 
