@@ -57,18 +57,17 @@ int asm_setjmp(asm_jmp_buf env) {
   int ret = 0;
     asm (
       
-      "movq %%rbx,(%%rdi) \n\t"        // rdi is jmp_buf, move registers onto it 
+      "movq %%rbx,(%%rdi) \n\t"       
 	    "movq %%rbp,8(%%rdi) \n\t"
 	    "movq %%r12,16(%%rdi) \n\t"
 	    "movq %%r13,24(%%rdi) \n\t"
 	    "movq %%r14,32(%%rdi) \n\t"
 	    "movq %%r15,40(%%rdi) \n\t"
-	    "leaq 8(%%rsp),%%rdx \n\t"        // this is our rsp WITHOUT current ret addr 
+	    "leaq 8(%%rsp),%%rdx \n\t"       
 	    "movq %%rdx,48(%%rdi) \n\t"
-	    "movq (%%rsp),%%rdx \n\t"         // save return addr ptr for new rip 
+	    "movq (%%rsp),%%rdx \n\t"        
 	    "movq %%rdx,56(%%rdi) \n\t"
-	    "xorl %%eax,%%eax \n\t"
-      "end : \n\t"         
+	    "xorl %%eax,%%eax \n\t"        
       : "=a"(ret), "=D"(env)
       : "a"(ret), "D"(env)
       
@@ -89,21 +88,18 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	  "mov 40(%rdi),%r15;"
 	  "mov 48(%rdi),%rsp;"
 	  "jmp *56(%rdi);" 
-  /*    "xor %%eax,%%eax \n\t" 
+  /*  "xor %%eax,%%eax \n\t" 
 	    "cmp $1,%%esi \n\t"            
 	    "adc %%esi,%%eax \n\t" 
-	    "movq (%%rdi),%%rbx \n\t"          // rdi is the jmp_buf, restore regs from it 
+	    "movq (%%rdi),%%rbx \n\t"     
 	    "movq 8(%%rdi),%%rbp \n\t"
 	    "movq 16(%%rdi),%%r12 \n\t"
 	    "movq 24(%%rdi),%%r13 \n\t"
 	    "movq 32(%%rdi),%%r14 \n\t"
 	    "movq 40(%%rdi),%%r15 \n\t"
 	    "movq 48(%%rdi),%%rsp \n\t"
-      "jmp *56(%%rdi) \n\t"  // goto saved address without altering rsp 
+      "jmp *56(%%rdi) \n\t"  
       : "=a"(val), "=D"(env)
-      : "a"(val), "D"(env)  */
-      
+      : "a"(val), "D"(env)  */      
     );
 }
-
-//int main(){}
