@@ -55,7 +55,7 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 
 int asm_setjmp(asm_jmp_buf env) {
   int ret = 0;
-    asm volatile(
+    asm (
       "movq %%rbx,(%%rdi) \n\t"        /* rdi is jmp_buf, move registers onto it */
 	    "movq %%rbp,8(%%rdi) \n\t"
 	    "movq %%r12,16(%%rdi) \n\t"
