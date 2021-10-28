@@ -78,15 +78,16 @@ void asm_longjmp(asm_jmp_buf env, int val) {
       "jnz tmp"
       "addq $1,%%rax"      //  eax++
       "tmp:"
-      "movq   (%%rdx),%%rsp" 
       "movq  8(%%edx),%%rbx" 
-      "movq  16(%%edx),%%rbp" 
       "movq 24(%%edx),%%r12" 
       "movq 32(%%edx),%%r13" 
       "movq 40(%%edx),%%r14"
       "movq 48(%%edx),%%r15"
+      "movq  16(%%edx),%%rbp"
+      "movq (%%rdx),%%rcx" 
+      "movq %%rcx,%%rsp"
       "movq 56(%%edx), %%rcx" 
-      "jmp *%%rcx " 
+      "jmp  *%%rcx " 
       : "=d"(env) , "=a"(val)
       : "d"(env) , "a"(val)     
     );
