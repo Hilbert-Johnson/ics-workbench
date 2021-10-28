@@ -55,7 +55,7 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 
 int asm_setjmp(asm_jmp_buf env) {
   int ret = 0;
-  /*  asm volatile(
+    asm volatile(
       "movq  %%rsp , (%%rdi) \n\t"
       "movq  %%rbx , 8(%%rdi) \n\t"
       "movq  %%rbp , 16(%%rdi) \n\t"
@@ -64,11 +64,11 @@ int asm_setjmp(asm_jmp_buf env) {
       "movq  %%r14 , 40(%%rdi) \n\t"
       "movq  %%r15 , 48(%%rdi) \n\t"
       "xorq  %%rax , %%rax \n\t"
-      "movq  (%%rsp), %%rcx \n\t"
-      "movq %%rcx , 56(%%rdi) \n\t"
+      "leaq  4(%%rip), %%rcx \n\t"
+      "movq  %%rcx , 56(%%rdi) \n\t"
       : "=D" (env) , "=a"(ret)
       : "D" (env)
-    ); */
+    ); 
   return ret;
 }
 
@@ -78,16 +78,16 @@ void asm_longjmp(asm_jmp_buf env, int val) {
       "jnz tmp"
       "addq $1,%%rax"      //  eax++
       "tmp:"
-      "movq  8(%%edx),%%rbx" 
-      "movq 24(%%edx),%%r12" 
-      "movq 32(%%edx),%%r13" 
-      "movq 40(%%edx),%%r14"
-      "movq 48(%%edx),%%r15"
-      "movq  16(%%edx),%%rbp"
-      "movq (%%rdx),%%rcx" 
-      "movq %%rcx,%%rsp"
-      "movq 56(%%edx), %%rcx" 
-      "jmp  *%%rcx " 
+      "movq  8(%%edx),%%rbx ;" 
+      "movq 24(%%edx),%%r12;" 
+      "movq 32(%%edx),%%r13;" 
+      "movq 40(%%edx),%%r14;"
+      "movq 48(%%edx),%%r15;"
+      "movq  16(%%edx),%%rbp;"
+      "movq (%%rdx),%%rcx;" 
+      "movq %%rcx,%%rsp;"
+      "movq 56(%%edx), %%rcx;" 
+      "jmp  *%%rcx; " 
       : "=d"(env) , "=a"(val)
       : "d"(env) , "a"(val)     
     );
