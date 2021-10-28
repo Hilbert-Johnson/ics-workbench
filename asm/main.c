@@ -2,10 +2,11 @@
 #include <assert.h>
 #include <stdio.h>
 
+asm_jmp_buf buf;
+
 int main() {
   //printf("%ld\n",asm_add(1,1));
   //printf("%d\n",asm_popcnt(0xffffffffffffffff)); 
-  asm_jmp_buf buf;
   int r = asm_setjmp(buf);
   printf("r:%d\n",r);
   if (r == 0) {
