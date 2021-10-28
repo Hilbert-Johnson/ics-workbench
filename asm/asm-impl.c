@@ -64,7 +64,8 @@ int asm_setjmp(asm_jmp_buf env) {
       "movq  %%r14 , 40(%%rdi) \n\t"
       "movq  %%r15 , 48(%%rdi) \n\t"
       "xorq  %%rax , %%rax \n\t"
-    
+      "leal 4(%%rip), %%rcx \n\t"
+      "movq %%rcx , 56(%%rdi) \n\t"
       : "=D" (env) , "=a"(ret)
       : "D" (env)
     );
