@@ -56,7 +56,6 @@ void *asm_memcpy(void *dest, const void *src, size_t n) {
 int asm_setjmp(asm_jmp_buf env) {
   int ret = 0;
     asm (
-      
       "movq %%rbx,(%%rdi) \n\t"       
 	    "movq %%rbp,8(%%rdi) \n\t"
 	    "movq %%r12,16(%%rdi) \n\t"
@@ -75,7 +74,7 @@ int asm_setjmp(asm_jmp_buf env) {
 }
 
 void asm_longjmp(asm_jmp_buf env, int val) {
-    asm(
+    /*asm(
     "xor %eax,%eax \n\t"
 	  "cmp $1,%esi \n\t"            
 	  "adc %esi,%eax \n\t"          
@@ -87,5 +86,20 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	  "mov 40(%rdi),%r15 \n\t"
 	  "mov 48(%rdi),%rsp \n\t"
 	  "jmp *56(%rdi) \n\t"    
+    );*/
+    asm volatile(
+        "xor %%eax,%%eax \n\t"
+	      "cmp $1,%%esi \n\t"            
+	      "adc %%esi,%%eax \n\t"          
+	      "mov (%%rdi),%%rbx \n\t"          
+	      "mov 8(%%rdi),%%rbp \n\t"
+	      "mov 16(%%rdi),%%r12 \n\t"
+	      "mov 24(%%rdi),%%r13 \n\t"
+	      "mov 32(%%rdi),%%r14 \n\t"
+	      "mov 40(%%rdi),%%r15 \n\t"
+	      "mov 48(%%rdi),%%rsp \n\t"
+	      "jmp *56(%%rdi) \n\t"
+        : 
+        : 
     );
 }
