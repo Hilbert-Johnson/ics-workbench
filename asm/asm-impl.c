@@ -87,7 +87,7 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	  "mov 48(%rdi),%rsp \n\t"
 	  "jmp *56(%rdi) \n\t"    
     );*/
-    asm volatile(
+    asm (
         "xor %%eax,%%eax \n\t"
 	      "cmp $1,%%esi \n\t"            
 	      "adc %%esi,%%eax \n\t"          
