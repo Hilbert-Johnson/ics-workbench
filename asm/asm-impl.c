@@ -100,6 +100,6 @@ void asm_longjmp(asm_jmp_buf env, int val) {
 	      "mov 48(%%rdi),%%rsp \n\t"
 	      "jmp *56(%%rdi) \n\t"
         : 
-        : 
+        : "D"(env)
     );
 }
