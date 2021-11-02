@@ -1,10 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define asm_jmp_buf jmp_buf
-typedef struct _jmp_buf {
-    int64_t callee_saved[8];
-} jmp_buf[1];
+typedef uintptr_t asm_jmp_buf[8]; 
 
 int64_t asm_add(int64_t a, int64_t b);
 int     asm_popcnt(uint64_t x);
