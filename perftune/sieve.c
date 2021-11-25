@@ -13,7 +13,7 @@ int *sieve(int n) {
     is_prime[i] = true;
 
   for (int i = 3; i*i<= n; i+=2) {
-    for (int j = i+(i<<1); j <= n; j += (i<<1)) {
+    for (int j = i*i; j <= n; j += (i<<1)) {
       is_prime[j] = false;
     }
   }
