@@ -15,6 +15,7 @@ int *sieve(int n) {
 
   for (int i = 3; i <= n; i+=2) {
     for (int j = i+(i<<2); j <= n; j += (i<<2)) {
+      if(j==9) printf("here\n");
       is_prime[j] = false;
     }
   }
