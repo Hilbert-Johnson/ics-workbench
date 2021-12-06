@@ -105,6 +105,7 @@ void init_cache(int total_size_width, int associativity_width) {
   max_index_bit = total_size_width - 6 - associativity_width;
   tag_bit = sizeof(uintptr_t)*8 - 6 - max_index_bit;
   cache = malloc(sizeof(struct line) * block_num);
+  printf("block_num:%d associate:%d index_bit:%d tag_bit:%d",block_num,associate,max_index_bit,tag_bit);
   for(int i = 0; i < block_num;i++){
     cache[i].valid = false;
     cache[i].dirty = false;
