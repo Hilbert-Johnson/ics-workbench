@@ -32,8 +32,8 @@ void c2m(int group_num, int line_index){
 }
 
 int give_me_an_index(uintptr_t addr) {
-    uint32_t tag = get_tag(addr);
-    uint32_t group_num = get_group_index(addr);
+    uint32_t tag = addr>>(max_index_bit+BLOCK_WIDTH);
+    uint32_t group_num = (addr<<tag_bit)>>(tag_bit+BLOCK_WIDTH);
     int group_start = group_num * associate;
     int group_end = group_start + associate;
 
@@ -61,7 +61,7 @@ int give_me_an_index(uintptr_t addr) {
 
 uint32_t cache_read(uintptr_t addr) {
   int line_index = give_me_an_index(addr);
-  int data_index = get_data_index(addr);
+  int data_index = (addr & BLOCK_MASK)/sizeof(uint32_t);
 
   return cache[line_index].memory[data_index];
 }
