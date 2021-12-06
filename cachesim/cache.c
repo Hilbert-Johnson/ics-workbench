@@ -26,13 +26,13 @@ void cycle_increase(int n) { cycle_cnt += n; }
 void m2c(uintptr_t addr, int line_index){
   cache[line_index].valid = true;
   cache[line_index].tag = addr>>(BLOCK_WIDTH+max_index_bit);
-  mem_read(addr >> BLOCK_WIDTH,(uint8_t*)(cache[line_index].memory));
+  mem_read(addr >> BLOCK_WIDTH,(uint8_t*)cache[line_index].memory);
   cache[line_index].dirty = false;
 }
 
 void c2m(int group_num, int line_index){
   if(cache[line_index].dirty)
-    mem_write((cache[line_index].tag << max_index_bit)|group_num, (uint8_t*)&cache[line_index].memory[0]);
+    mem_write((cache[line_index].tag << max_index_bit)|group_num, (uint8_t*)cache[line_index].memory);
   cache[line_index].valid = false;
 }
 
