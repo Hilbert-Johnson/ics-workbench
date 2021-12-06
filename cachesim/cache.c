@@ -12,10 +12,10 @@ int tag_bit = 0;
 int max_index_bit = 0;
 
 struct line {
-  uint32_t memory[16]; //  序号代表块内地址
-  bool valid,dirty;  //　有效位，脏位
-  uint32_t tag;      //　标记，代表取模后的内存地址高位
-};// 序号代表行号
+  uint32_t memory[16]; 
+  bool valid,dirty;  
+  uint32_t tag;
+};
 
 struct line *cache=NULL;
 
