@@ -14,7 +14,7 @@ int max_index_bit = 0;
 struct line{
   bool valid,dirty;
   uintptr_t tag;
-  uint8_t memory[64];
+  uint8_t memory[BLOCK_SIZE];
 };
 
 struct line *cache=NULL;
@@ -25,8 +25,8 @@ void cycle_increase(int n) { cycle_cnt += n; }
 
 uint32_t cache_read(uintptr_t addr) {
   uintptr_t in_block_addr = addr & BLOCK_MASK;
-  uintptr_t index_addr = (addr<<tag_bit)>>(tag_bit+6);
-  uintptr_t tag_addr = addr>>(max_index_bit+6);
+  uintptr_t index_addr = (addr<<tag_bit)>>(tag_bit+BLOCK_WIDTH);
+  uintptr_t tag_addr = addr>>(max_index_bit+BLOCK_WIDTH);
 
   for(int i = 0; i<associate; i++){
     if(cache[associate*index_addr + i].valid==true && cache[associate*index_addr + i].tag==tag_addr){
@@ -34,15 +34,15 @@ uint32_t cache_read(uintptr_t addr) {
     }
   }
 
-  uint8_t buf[64];
-  mem_read(addr>>6, buf);
+  uint8_t buf[BLOCK_SIZE];
+  mem_read(addr>>BLOCK_WIDTH, buf);
 
   for(int i = 0; i<associate; i++){
     if(cache[associate*index_addr + i].valid==false){
       cache[associate*index_addr + i].valid = true;
       cache[associate*index_addr + i].dirty = false;
       cache[associate*index_addr + i].tag = tag_addr;
-      for(int j = 0; j<64; j++) cache[associate*index_addr + i].memory[j] = buf[j];
+      for(int j = 0; j<BLOCK_SIZE; j++) cache[associate*index_addr + i].memory[j] = buf[j];
       return buf[in_block_addr];
     }
   }
@@ -54,15 +54,15 @@ uint32_t cache_read(uintptr_t addr) {
   cache[associate*index_addr + replace].valid = true;
   cache[associate*index_addr + replace].dirty = false;
   cache[associate*index_addr + replace].tag = tag_addr;
-  for(int i=0; i<64; i++) cache[associate*index_addr + replace].memory[i] = buf[i];
+  for(int i=0; i<BLOCK_SIZE; i++) cache[associate*index_addr + replace].memory[i] = buf[i];
 
   return buf[in_block_addr];
 }
 
 void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
   uintptr_t in_block_addr = addr & BLOCK_MASK;
-  uintptr_t index_addr = (addr<<tag_bit)>>(tag_bit+6);
-  uintptr_t tag_addr = addr>>(max_index_bit+6);
+  uintptr_t index_addr = (addr<<tag_bit)>>(tag_bit+BLOCK_WIDTH);
+  uintptr_t tag_addr = addr>>(max_index_bit+BLOCK_WIDTH);
   int i;
   for(i = 0; i<associate; i++){
     if(cache[associate*index_addr + i].valid==true && cache[associate*index_addr + i].tag==tag_addr){
@@ -72,15 +72,15 @@ void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
     }
   }
   if(i == associate){
-    uint8_t buf[64];
-    mem_read(addr>>6, buf);
+    uint8_t buf[BLOCK_SIZE];
+    mem_read(addr>>BLOCK_WIDTH, buf);
     int j;
     for(j = 0; i<associate; j++){
       if(cache[associate*index_addr + j].valid == false){
         cache[associate*index_addr + j].valid = true;
         cache[associate*index_addr + j].dirty = true;
         cache[associate*index_addr + j].tag = tag_addr;
-        for(int k = 0; k<64; k++) cache[associate*index_addr + j].memory[k] = buf[k];
+        for(int k = 0; k<BLOCK_SIZE; k++) cache[associate*index_addr + j].memory[k] = buf[k];
         *(uint32_t *)(cache[associate*index_addr + j].memory+in_block_addr)=data&wmask;
         break;
       }
@@ -93,17 +93,17 @@ void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
       cache[associate*index_addr + replace].valid = true;
       cache[associate*index_addr + replace].dirty = true;
       cache[associate*index_addr + replace].tag = tag_addr;
-      for(int k=0; k<64; k++) cache[associate*index_addr + replace].memory[k] = buf[k];
+      for(int k=0; k<BLOCK_SIZE; k++) cache[associate*index_addr + replace].memory[k] = buf[k];
       *(uint32_t *)(cache[associate*index_addr + replace].memory+in_block_addr)=data&wmask; 
     }
   }
 }
 
 void init_cache(int total_size_width, int associativity_width) {
-  block_num = 1 << (total_size_width - 6);
-  associate = 1 << associativity_width;
-  max_index_bit = total_size_width - 6 - associativity_width;
-  tag_bit = sizeof(uintptr_t)*8 - 6 - max_index_bit;
+  block_num = exp2(total_size_width - BLOCK_WIDTH);
+  associate = exp2(associativity_width);
+  max_index_bit = total_size_width - BLOCK_WIDTH - associativity_width;
+  tag_bit = sizeof(uintptr_t)*8 - BLOCK_WIDTH - max_index_bit;
   cache = malloc(sizeof(struct line) * block_num);
   printf("block_num:%lu associate:%lu index_bit:%d tag_bit:%d",block_num,associate,max_index_bit,tag_bit);
   for(int i = 0; i < block_num;i++){
