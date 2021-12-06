@@ -50,10 +50,12 @@ uint32_t cache_read(uintptr_t addr) {
   int replace = rand() % associate;
   if(cache[associate*index_addr + replace].dirty == true)
     mem_write((cache[associate*index_addr + replace].tag<<max_index_bit)|index_addr, cache[associate*index_addr + replace].memory);
+  
   cache[associate*index_addr + replace].valid = true;
   cache[associate*index_addr + replace].dirty = false;
   cache[associate*index_addr + replace].tag = tag_addr;
   for(int i=0; i<64; i++) cache[associate*index_addr + replace].memory[i] = buf[i];
+
   return buf[in_block_addr];
 }
 
@@ -61,6 +63,40 @@ void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
   uintptr_t in_block_addr = addr & BLOCK_MASK;
   uintptr_t index_addr = (addr<<tag_bit)>>(tag_bit+6);
   uintptr_t tag_addr = addr>>(max_index_bit+6);
+  int i;
+  for(i = 0; i<associate; i++){
+    if(cache[associate*index_addr + i].valid==true && cache[associate*index_addr + i].tag==tag_addr){
+      *(uint32_t *)(cache[associate*index_addr + i].memory+in_block_addr)=data&wmask;
+      cache[associate*index_addr + i].dirty = true;
+      break;
+    }
+  }
+  if(i == associate){
+    uint8_t buf[64];
+    mem_read(addr>>6, buf);
+    int j;
+    for(j = 0; i<associate; j++){
+      if(cache[associate*index_addr + j].valid == false){
+        cache[associate*index_addr + j].valid = true;
+        cache[associate*index_addr + j].dirty = true;
+        cache[associate*index_addr + j].tag = tag_addr;
+        for(int k = 0; k<64; k++) cache[associate*index_addr + j].memory[k] = buf[k];
+        *(uint32_t *)(cache[associate*index_addr + j].memory+in_block_addr)=data&wmask;
+        break;
+      }
+    }
+    if(j == associate){
+      int replace = rand() % associate;
+      if(cache[associate*index_addr + replace].dirty == true)
+        mem_write((cache[associate*index_addr + replace].tag<<max_index_bit)|index_addr, cache[associate*index_addr + replace].memory);
+  
+      cache[associate*index_addr + replace].valid = true;
+      cache[associate*index_addr + replace].dirty = true;
+      cache[associate*index_addr + replace].tag = tag_addr;
+      for(int k=0; k<64; k++) cache[associate*index_addr + replace].memory[k] = buf[k];
+      *(uint32_t *)(cache[associate*index_addr + replace].memory+in_block_addr)=data&wmask; 
+    }
+  }
 }
 
 void init_cache(int total_size_width, int associativity_width) {
