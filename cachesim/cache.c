@@ -14,7 +14,7 @@ int max_index_bit = 0;
 struct line{
   bool valid,dirty;
   uintptr_t tag;
-  uint8_t memory[BLOCK_SIZE];
+  uint64_t memory[BLOCK_SIZE/4];
 };
 
 struct line *cache=NULL;
@@ -23,86 +23,56 @@ void cycle_increase(int n) { cycle_cnt += n; }
 
 #define BLOCK_MASK 0x3f
 
+void c2m(int group_num, int line_index){
+  if(cache[line_index].dirty){
+    uintptr_t start = (cache[line_index].tag << max_index_bit)+group_num;
+    mem_write(start, (uint8_t*)&cache[line_index].memory[0]);
+  }
+  cache[line_index].valid = false;
+}
+
+int give_me_an_index(uintptr_t addr) {
+    uint32_t tag = get_tag(addr);
+    uint32_t group_num = get_group_index(addr);
+    int group_start = group_num * associate;
+    int group_end = group_start + associate;
+
+    for (int i = group_start; i<group_end;i++){
+        if (cache[i].valid && cache[i].tag == tag){
+          return i;
+        }
+    }
+
+    for(int i = group_start;i< group_end;i++){
+      if(!cache[i].valid){
+        m2c(addr,i);
+        return i;
+      }
+    }
+
+    int line_index = group_start + rand()%associate;
+    c2m(group_num,line_index);
+    m2c(addr,line_index);
+
+    return line_index;
+}
+
+
+
 uint32_t cache_read(uintptr_t addr) {
-  uintptr_t in_block_addr = addr & BLOCK_MASK;
-  uintptr_t index_addr = (addr<<tag_bit)>>(tag_bit+BLOCK_WIDTH);
-  uintptr_t tag_addr = addr>>(max_index_bit+BLOCK_WIDTH);
+  int line_index = give_me_an_index(addr);
+  int data_index = get_data_index(addr);
 
-  for(int i = 0; i<associate; i++){
-    if(cache[associate*index_addr + i].valid==true && cache[associate*index_addr + i].tag==tag_addr){
-      return *(uint32_t *)(cache[associate*index_addr + i].memory+in_block_addr);
-    }
-  }
-
-  uint8_t buf[BLOCK_SIZE];
-  mem_read(addr>>BLOCK_WIDTH, buf);
-
-  for(int i = 0; i<associate; i++){
-    if(cache[associate*index_addr + i].valid==false){
-      cache[associate*index_addr + i].valid = true;
-      cache[associate*index_addr + i].dirty = false;
-      cache[associate*index_addr + i].tag = tag_addr;
-      for(int j = 0; j<BLOCK_SIZE; j++) cache[associate*index_addr + i].memory[j] = buf[j];
-      return *(uint32_t *)(buf+in_block_addr);
-    }
-  }
-
-  int replace = rand() % associate;
-  if(cache[associate*index_addr + replace].dirty == true)
-    mem_write((cache[associate*index_addr + replace].tag<<max_index_bit)|index_addr, cache[associate*index_addr + replace].memory);
-  
-  cache[associate*index_addr + replace].valid = true;
-  cache[associate*index_addr + replace].dirty = false;
-  cache[associate*index_addr + replace].tag = tag_addr;
-  for(int i=0; i<BLOCK_SIZE; i++) cache[associate*index_addr + replace].memory[i] = buf[i];
-
-  return *(uint32_t *)(buf+in_block_addr);
+  return cache[line_index].memory[data_index];
 }
 
 void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
-  uintptr_t in_block_addr = addr & BLOCK_MASK;
-  uintptr_t index_addr = (addr<<tag_bit)>>(tag_bit+BLOCK_WIDTH);
-  uintptr_t tag_addr = addr>>(max_index_bit+BLOCK_WIDTH);
-  int i;
-  for(i = 0; i<associate; i++){
-    if(cache[associate*index_addr + i].valid==true && cache[associate*index_addr + i].tag==tag_addr){
-      uint32_t *tmp = (uint32_t *)(cache[associate*index_addr + i].memory+in_block_addr);
-      *tmp-=*tmp&wmask;
-      *tmp+=data&wmask;
-      cache[associate*index_addr + i].dirty = true;
-      break;
-    }
-  }
-  if(i == associate){
-    uint8_t buf[BLOCK_SIZE];
-    mem_read(addr>>BLOCK_WIDTH, buf);
-    int j;
-    for(j = 0; j<associate; j++){
-      if(cache[associate*index_addr + j].valid == false){
-        cache[associate*index_addr + j].valid = true;
-        cache[associate*index_addr + j].dirty = true;
-        cache[associate*index_addr + j].tag = tag_addr;
-        for(int k = 0; k<BLOCK_SIZE; k++) cache[associate*index_addr + j].memory[k] = buf[k];
-        uint32_t *tmp = (uint32_t *)(cache[associate*index_addr + j].memory+in_block_addr);
-        *tmp-=*tmp&wmask;
-        *tmp+=data&wmask;
-        break;
-      }
-    }
-    if(j == associate){
-      int replace = rand() % associate;
-      if(cache[associate*index_addr + replace].dirty == true)
-        mem_write((cache[associate*index_addr + replace].tag<<max_index_bit)|index_addr, cache[associate*index_addr + replace].memory);
-  
-      cache[associate*index_addr + replace].valid = true;
-      cache[associate*index_addr + replace].dirty = true;
-      cache[associate*index_addr + replace].tag = tag_addr;
-      for(int k=0; k<BLOCK_SIZE; k++) cache[associate*index_addr + replace].memory[k] = buf[k];
-      uint32_t *tmp = (uint32_t *)(cache[associate*index_addr + replace].memory+in_block_addr);
-      *tmp-=*tmp&wmask;
-      *tmp+=data&wmask;
-    }
-  }
+  int line_index = give_me_an_index(addr);
+  int data_index = (addr & BLOCK_MASK)/sizeof(uint32_t);
+
+  cache[line_index].memory[data_index] -= cache[line_index].memory[data_index]&wmask;
+  cache[line_index].memory[data_index] += data&wmask;
+  cache[line_index].dirty = true;
 }
 
 void init_cache(int total_size_width, int associativity_width) {
