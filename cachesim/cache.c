@@ -11,11 +11,11 @@ uint64_t associate = 0;
 int tag_bit = 0;
 int max_index_bit = 0;
 
-struct line{
-  bool valid,dirty;
-  uintptr_t tag;
-  uint64_t memory[BLOCK_SIZE/4];
-};
+struct line {
+  uint32_t memory[16]; //  序号代表块内地址
+  bool valid,dirty;  //　有效位，脏位
+  uint32_t tag;      //　标记，代表取模后的内存地址高位
+};// 序号代表行号
 
 struct line *cache=NULL;
 
@@ -29,7 +29,6 @@ void m2c(uintptr_t addr, int line_index){
   uintptr_t start = addr >> BLOCK_WIDTH;
   mem_read(start,(uint8_t*)(&cache[line_index].memory[0]));
   cache[line_index].dirty = false;
-  
 }
 
 void c2m(int group_num, int line_index){
