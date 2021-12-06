@@ -13,7 +13,7 @@ int max_index_bit = 0;
 
 struct line{
   bool valid,dirty;
-  uint8_t tag;
+  uintptr_t tag;
   uint8_t memory[64];
 };
 
