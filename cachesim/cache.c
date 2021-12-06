@@ -130,7 +130,7 @@ static int group_width; //　组号宽度
 // 统计量
 static uint64_t hit,miss;
 uint64_t real_time;
-
+void cycle_increase(int n) { cycle_cnt += n; }
 // 获取高位地址
 uint32_t get_tag(uintptr_t addr){
   int mod_width = group_width+BLOCK_WIDTH;
