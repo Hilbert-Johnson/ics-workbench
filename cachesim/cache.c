@@ -82,7 +82,7 @@ void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
         cache[associate*index_addr + j].dirty = true;
         cache[associate*index_addr + j].tag = tag_addr;
         for(int k = 0; k<BLOCK_SIZE; k++) cache[associate*index_addr + j].memory[k] = buf[k];
-        uint32_t *tmp = (uint32_t *)(cache[associate*index_addr + i].memory+in_block_addr);
+        uint32_t *tmp = (uint32_t *)(cache[associate*index_addr + j].memory+in_block_addr);
         *tmp=data&wmask;
         break;
       }
@@ -96,7 +96,7 @@ void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
       cache[associate*index_addr + replace].dirty = true;
       cache[associate*index_addr + replace].tag = tag_addr;
       for(int k=0; k<BLOCK_SIZE; k++) cache[associate*index_addr + replace].memory[k] = buf[k];
-      uint32_t *tmp = (uint32_t *)(cache[associate*index_addr + i].memory+in_block_addr);
+      uint32_t *tmp = (uint32_t *)(cache[associate*index_addr + replace].memory+in_block_addr);
       *tmp=data&wmask;
     }
   }
