@@ -32,7 +32,7 @@ void m2c(uintptr_t addr, int line_index){
 
 void c2m(int group_num, int line_index){
   if(cache[line_index].dirty)
-    mem_write(s(cache[line_index].tag << max_index_bit)|group_num, (uint8_t*)&cache[line_index].memory[0]);
+    mem_write((cache[line_index].tag << max_index_bit)|group_num, (uint8_t*)&cache[line_index].memory[0]);
   cache[line_index].valid = false;
 }
 
