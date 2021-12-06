@@ -76,7 +76,7 @@ void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
     uint8_t buf[BLOCK_SIZE];
     mem_read(addr>>BLOCK_WIDTH, buf);
     int j;
-    for(j = 0; i<associate; j++){
+    for(j = 0; j<associate; j++){
       if(cache[associate*index_addr + j].valid == false){
         cache[associate*index_addr + j].valid = true;
         cache[associate*index_addr + j].dirty = true;
