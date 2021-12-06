@@ -36,35 +36,33 @@ void c2m(int group_num, int line_index){
   cache[line_index].valid = false;
 }
 
-int give_me_an_index(uintptr_t addr) {
+int give_index(uintptr_t addr) {
     uint32_t tag = addr>>(max_index_bit+BLOCK_WIDTH);
     uint32_t group_num = (addr<<tag_bit)>>(tag_bit+BLOCK_WIDTH);
-    for (int i = group_num * associate; i<group_num * associate+associate; i++){
+    for (int i = group_num*associate; i<group_num*associate+associate; i++){
         if (cache[i].valid && cache[i].tag == tag)
           return i;
     }
-    for(int i = group_num * associate;i< group_num * associate+associate;i++){
+    for(int i = group_num*associate;i< group_num*associate+associate;i++){
       if(!cache[i].valid){
         m2c(addr,i);
         return i;
       }
     }
-    int line_index = group_num * associate + rand()%associate;
+    int line_index = group_num*associate + rand()%associate;
     c2m(group_num,line_index);
     m2c(addr,line_index);
     return line_index;
 }
 
-
-
 uint32_t cache_read(uintptr_t addr) {
-  int line_index = give_me_an_index(addr);
+  int line_index = give_index(addr);
   int data_index = (addr & BLOCK_MASK)/sizeof(uint32_t);
   return cache[line_index].memory[data_index];
 }
 
 void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
-  int line_index = give_me_an_index(addr);
+  int line_index = give_index(addr);
   int data_index = (addr & BLOCK_MASK)/sizeof(uint32_t);
   cache[line_index].memory[data_index] -= cache[line_index].memory[data_index]&wmask;
   cache[line_index].memory[data_index] += data&wmask;
