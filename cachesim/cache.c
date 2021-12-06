@@ -9,7 +9,7 @@ uint64_t block_num = 0;
 uint64_t associate = 0;
 
 int tag = 0;
-int index = 0;
+int cache_index = 0;
 
 struct line{
   bool valid,dirty;
@@ -33,8 +33,8 @@ void cache_write(uintptr_t addr, uint32_t data, uint32_t wmask) {
 void init_cache(int total_size_width, int associativity_width) {
   block_num = 1 << (total_size_width - 6);
   associate = 1 << associativity_width;
-  index = total_size_width - 6 - associativity_width;
-  tag = sizeof(uintptr_t)*8 - 6 - index;
+  cache_index = total_size_width - 6 - associativity_width;
+  tag = sizeof(uintptr_t)*8 - 6 - cache_index;
   chache = malloc(sizeof(struct line) * block_num);
 }
 
