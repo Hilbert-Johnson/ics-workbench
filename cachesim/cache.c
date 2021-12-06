@@ -17,7 +17,7 @@ struct line{
   uint8_t memory[64];
 };
 
-struct line *chache=NULL;
+struct line *cache=NULL;
 
 void cycle_increase(int n) { cycle_cnt += n; }
 
@@ -35,7 +35,11 @@ void init_cache(int total_size_width, int associativity_width) {
   associate = 1 << associativity_width;
   cache_index = total_size_width - 6 - associativity_width;
   tag = sizeof(uintptr_t)*8 - 6 - cache_index;
-  chache = malloc(sizeof(struct line) * block_num);
+  cache = malloc(sizeof(struct line) * block_num);
+  for(int i = 0; i < block_num;i++){
+    cache[i].valid = false;
+    cache[i].dirty = false;
+  }
 }
 
 void display_statistic(void) {
